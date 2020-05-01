@@ -3,16 +3,16 @@ import cv2
 import os
 import matplotlib.pyplot as plt
 
-FILE = "/home/oljik/dev/data-science/py/img/1.jpeg"
+FILE = "./img/1.jpeg"
 
 bgr_img_array = cv2.imread(FILE)
 
 b,g,r = cv2.split(bgr_img_array)       # get b,g,r
 rgb_img = cv2.merge([r,g,b])     # switch it to rgb
 
-print(r)
-print(g)
-print(b)
+#print(r)
+#print(g)
+#print(b)
 
 lower = np.array([0,0,0], dtype = "uint8")
 upper = np.array([150,150,150], dtype = "uint8")
@@ -57,6 +57,18 @@ plt.show()"""
 
 out_gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
 
+out_gray_reverse = np.swapaxes(out_gray, 0, 1)
+ecg_points = []
+
+for i in range(0, len(out_gray_reverse) - 1):
+    for j in range(0, len(out_gray_reverse[i]) - 1):
+        if(int(out_gray_reverse[i][j]) < 150):
+            ecg_points.append(j)
+            break
+
+print(ecg_points)
+
 plt.imshow(out_gray, cmap="gray", vmin=0, vmax=255)
 plt.xticks([]), plt.yticks([])   # to hide tick values on X and Y axis
+
 plt.show()

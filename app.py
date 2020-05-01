@@ -14,7 +14,7 @@ class Window(QWidget):
     def init_ui(self):
 
         self.g_lay = QGridLayout()
-        self.top_label = QLabel('bla bla bla')
+        self.top_label = QLabel('ECG Monitoring')
         #self.m_label= QLineEdit('Loading...')
         self.i_button = QPushButton('Выбрать')
         self.i_label= QLabel('Выберите файл форматом jpg, png или ..')
@@ -56,7 +56,7 @@ class Window(QWidget):
         self.g_lay.addWidget(self.res_label,6,0)
 
         self.setLayout(self.g_lay)
-        self.setWindowTitle('ECG bla bla bla')
+        self.setWindowTitle('ECG Monitoring')
 
         self.i_button.clicked.connect(lambda: self.file_btn_clk(self.i_button, 'i'))
         self.dat_button.clicked.connect(lambda: self.file_btn_clk(self.g_button, 'g'))
