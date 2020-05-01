@@ -58,15 +58,37 @@ plt.show()"""
 out_gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
 
 out_gray_reverse = np.swapaxes(out_gray, 0, 1)
-ecg_points = []
+ecg_points_all_blacks = []
 
-for i in range(0, len(out_gray_reverse) - 1):
-    for j in range(0, len(out_gray_reverse[i]) - 1):
+for i in range(0, len(out_gray_reverse)):
+    vertical_line_founds = []
+    for j in range(0, len(out_gray_reverse[i])):
         if(int(out_gray_reverse[i][j]) < 150):
-            ecg_points.append(j)
-            break
+            vertical_line_founds.append(j)
+    ecg_points_all_blacks.append(vertical_line_founds)
 
-print(ecg_points)
+ecg_points_blacks_maximums = []
+for i in range(0, len(ecg_points_all_blacks)):
+    if(len(ecg_points_all_blacks[i]) == 0):
+        continue
+    last_point = 0
+    max_points = []
+    for j in range(0, len(ecg_points_all_blacks[i])):
+        if(j == 0):
+            last_point = ecg_points_all_blacks[i][j]
+            max_points.append(last_point)
+        elif(j != 0 and last_point != (ecg_points_all_blacks[i][j] - 1)):
+            last_point = ecg_points_all_blacks[i][j]
+            max_points.append(last_point)
+        else:
+            last_point = ecg_points_all_blacks[i][j]
+            continue
+    if(len(max_points) == 1):
+        max_points = max_points[0]
+    ecg_points_blacks_maximums.append(max_points)
+
+print(ecg_points_blacks_maximums)
+
 
 plt.imshow(out_gray, cmap="gray", vmin=0, vmax=255)
 plt.xticks([]), plt.yticks([])   # to hide tick values on X and Y axis
