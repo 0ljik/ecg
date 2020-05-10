@@ -7,17 +7,16 @@ FILE = "./img/1.jpeg"
 
 bgr_img_array = cv2.imread(FILE)
 
-height = 100
-width = bgr_img_array.shape[1]/bgr_img_array.shape[0]*height
-
-resized_bgr_img_array = cv2.resize(bgr_img_array, (int(width), height))
-
-b,g,r = cv2.split(resized_bgr_img_array)       # get b,g,r
+b,g,r = cv2.split(bgr_img_array)       # get b,g,r
 rgb_img = cv2.merge([r,g,b])     # switch it to rgb
+
+#print(r)
+#print(g)
+#print(b)
 
 lower = np.array([0,0,0], dtype = "uint8")
 upper = np.array([150,150,150], dtype = "uint8")
-image = resized_bgr_img_array
+image = bgr_img_array
 
 # find the colors within the specified boundaries and apply
 # the mask
@@ -59,9 +58,6 @@ plt.show()"""
 out_gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
 
 out_gray_reverse = np.swapaxes(out_gray, 0, 1)
-
-#TODO 1 filter pass
-
 ecg_points_all_blacks = []
 
 for i in range(0, len(out_gray_reverse)):
