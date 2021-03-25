@@ -1,8 +1,9 @@
 import sys
-#import appserial
 from time import sleep
+
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (QLineEdit, QSlider, QPushButton, QGridLayout, QApplication, QWidget, QLabel, QSpinBox, QComboBox, QFileDialog, QDialog)
-from PyQt5.QtCore import (Qt, QThread, QTimer)
+from PyQt5.QtCore import (Qt, QThread, QTimer, QUrl)
 
 class Window(QWidget):
 
@@ -27,7 +28,12 @@ class Window(QWidget):
         self.type_label= QLabel('Выберите тип данных')
         self.type_cbox = QComboBox()
         self.calc_button = QPushButton('Расчитать')
-        self.res_label= QLabel('Result\nR found on: \nGraph:\n')
+        self.calc_button.setEnabled(False)
+        self.res_label1= QLabel('Result')
+        self.res_label2= QLabel('R found on:')
+        self.res_label3= QLabel('Graph:\n')
+
+        self.open_img = QLabel("")
 
         self.type_cbox.addItem("scan")
         self.type_cbox.addItem("aami")
@@ -53,14 +59,20 @@ class Window(QWidget):
         self.g_lay.addWidget(self.hea_button,4,1)
         self.g_lay.addWidget(self.hea_label,4,0)
         self.g_lay.addWidget(self.calc_button,5,0)
-        self.g_lay.addWidget(self.res_label,6,0)
+        # self.g_lay.addWidget(self.res_label1,6,0)
+        # self.g_lay.addWidget(self.open_img, 7, 0)
+        # self.g_lay.addWidget(self.res_label2,8,0)
+        # self.g_lay.addWidget(self.res_label3,9,0)
+
+        self.filename = ""
 
         self.setLayout(self.g_lay)
         self.setWindowTitle('ECG Monitoring')
 
         self.i_button.clicked.connect(lambda: self.file_btn_clk(self.i_button, 'i'))
-        self.dat_button.clicked.connect(lambda: self.file_btn_clk(self.g_button, 'g'))
-        self.hea_button.clicked.connect(lambda: self.file_btn_clk(self.p_button, 'p'))
+        self.dat_button.clicked.connect(lambda: self.file_btn_clk(self.dat_button, 'd'))
+        self.hea_button.clicked.connect(lambda: self.file_btn_clk(self.hea_button, 'h'))
+        self.calc_button.clicked.connect(lambda: self.btn_clk(self.calc_button, 'c'))
         #self.r_button.clicked.connect(lambda: self.btn_clk(self.r_button, 'Rework','r'))
 
         self.type_cbox.currentTextChanged.connect(self.on_combobox_changed)
@@ -107,12 +119,30 @@ class Window(QWidget):
             self.hea_button.hide()
             self.hea_label.hide()
     def file_btn_clk(self, b, sel):
-        dialog = QFileDialog(self, 'Audio Files', directory, filter)
-        dialog.setFileMode(QFileDialog.DirectoryOnly)
-        dialog.setSidebarUrls([QtCore.QUrl.fromLocalFile(place)])
-        if dialog.exec_() == QDialog.Accepted:
-            self._data_file = dialog.selectedFiles()[0]
-            print(type(self._data_file))
+        if sel == 'i':
+            directory = './img/'
+            fname = QFileDialog.getOpenFileName(self, 'Open file', directory, "Image files (*.jpg *.jpeg *.gif)")
+            print(fname)
+            self.filename = fname[0]
+            self.calc_button.setEnabled(True)
+        elif sel == 'd':
+            directory = './zapisi/'
+            fname = QFileDialog.getOpenFileName(self, 'Open file', directory, "Dat files (*.dat)")
+            print(fname)
+            self.filename1 = fname[0]
+            self.calc_button.setEnabled(True)
+        elif sel == 'h':
+            directory = './zapisi/'
+            fname = QFileDialog.getOpenFileName(self, 'Open file', directory, "Hea files (*.hea)")
+            print(fname)
+            self.filename1 = fname[0]
+            self.calc_button.setEnabled(True)
+        # dialog = QFileDialog(self, 'Image Files', directory, filter)
+        # dialog.setFileMode(QFileDialog.DirectoryOnly)
+        # dialog.setSidebarUrls([QUrl.fromLocalFile(place)])
+        # if dialog.exec_() == QDialog.Accepted:
+        #     self._data_file = dialog.selectedFiles()[0]
+        #     print(type(self._data_file))
 
     def v_change(self, s, sel):
         val = s.value()
@@ -130,21 +160,25 @@ class Window(QWidget):
             #self.thread.write(sel+' '+str(val))
             #appserial.send(sel+' '+str(value))
 
-    def btn_clk(self, b, string, sel):
-        if b.isChecked() == True:
-            b.setText(string+' on')
-            if sel!='r':
-                #print(sel+' '+str(getattr(self, "%s_spin" % sel).value()))
-                getattr(self, "%s_timer" % sel).stop()
-                getattr(self, "%s_timer" % sel).start()
-                #print(serread())
-            else:
-                print('to do')
+    def btn_clk(self, b, sel):
+        if self.type_cbox.currentIndex() == 1:
+            exec(open('d-h-converter.py').read())
         else:
-            if sel!='r':
-                b.setText(string+' off')
-                #-appserial.send('@'+str(send_sel[sel])+':'+'0'+';n')
-                #print(str(send_sel[sel])+':'+'0'+';')
+            exec(open('img.py').read())
+        # if b.isChecked() == True:
+        #     b.setText(string+' on')
+        #     if sel!='r':
+        #         #print(sel+' '+str(getattr(self, "%s_spin" % sel).value()))
+        #         getattr(self, "%s_timer" % sel).stop()
+        #         getattr(self, "%s_timer" % sel).start()
+        #         #print(serread())
+        #     else:
+        #         print('to do')
+        # else:
+        #     if sel!='r':
+        #         b.setText(string+' off')
+        #         #-appserial.send('@'+str(send_sel[sel])+':'+'0'+';n')
+        #         #print(str(send_sel[sel])+':'+'0'+';')
     def update_data(self, sel, val):
         #-appserial.send('@'+str(send_sel[sel])+':'+str(val.value())+';n')
         print('sent')
