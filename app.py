@@ -162,9 +162,9 @@ class Window(QWidget):
 
     def btn_clk(self, b, sel):
         if self.type_cbox.currentIndex() == 1:
-            exec(open('d-h-converter.py').read())
+            exec(open("d-h-converter.py").read())
         else:
-            exec(open('img.py').read())
+            exec(open("img.py").read())
         # if b.isChecked() == True:
         #     b.setText(string+' on')
         #     if sel!='r':
